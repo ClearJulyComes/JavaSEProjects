@@ -7,47 +7,49 @@ public class ByRegEx extends Thread implements Exchanger{
 
 	@Override
 	public void run() {
-		
+		double time = System.currentTimeMillis();
 		App appObj = new App();
-		String text = appObj.getName();
-        String result;
-        Pattern patternSite1 = Pattern.compile("www\\..+?\\.com");
-        Pattern patternSite2 = Pattern.compile("http://.+?\\.com");
-        Pattern patternEmail = Pattern.compile("\\b[^\\s]+?@[a-z]+?\\.com\\b");
-        result = findSite(text, patternSite1);
-        text = findSite(result, patternSite2);
-        text = findSite(text, patternEmail);
-        System.out.println(text);
+		String text = appObj.getText();
+        text = findSite(text);
+        time = System.currentTimeMillis() - time;
+        System.out.println(text + " - by RegEx, time = "+time);
         	
 		super.run();
 	}
 
-private static String findSite(String text, Pattern pattern) {
-		
-        Matcher matcher = pattern.matcher(text);
-        while(matcher.find()) {
-        	int start=0;
-        	int end=0;
-        	try{
-        		start= matcher.start();
-        		end = matcher.end();
-        	}catch(IllegalStateException e) {
-        		System.out.println(e);
-        	}
-        	String webAdress="";
-        	try{
-        		webAdress = text.substring(start, end);
-        	}catch(IndexOutOfBoundsException e) {
-        		System.out.println(e);
-        	}
-        	if(!webAdress.contains(" ")) {
-	        	text = textmaker(start, end, text);
-        	}
-        }
+	@Override
+	public String findSite(String text) {
+		Pattern[] patterns = new Pattern[3];
+		patterns[0] = Pattern.compile("\\bwww\\.[^\\s]+?\\.com\\b");
+        patterns[1] = Pattern.compile("\\bhttp://[^\\s]+?\\.com\\b");
+        patterns[2] = Pattern.compile("\\b[^\\s]+?@[a-z]+?\\.com\\b");
+		for(Pattern pattern:patterns) {
+	        Matcher matcher = pattern.matcher(text);
+	        while(matcher.find()) {
+	        	int start=0;
+	        	int end=0;
+	        	try{
+	        		start= matcher.start();
+	        		end = matcher.end();
+	        	}catch(IllegalStateException e) {
+	        		System.out.println(e);
+	        	}
+	        	String webAdress="";
+	        	try{
+	        		webAdress = text.substring(start, end);
+	        	}catch(IndexOutOfBoundsException e) {
+	        		System.out.println(e);
+	        	}
+	        	if(!webAdress.contains(" ")) {
+		        	text = textMaker(start, end, text);
+	        	}
+	        }
+		}
 		return text;
 	}
 
-	private static String textmaker(int start, int end, String text) {
+	@Override
+	public String textMaker(int start, int end, String text) {
 		String helper = makeStars(end-start);
     	String stringBegins="";
     	String stringEnds="";
@@ -61,12 +63,11 @@ private static String findSite(String text, Pattern pattern) {
 		return result;
 	}
 
-	private static String makeStars(int n) {
+	public String makeStars(int n) {
 		String result = "";
 		for(int i=0; i<n; i++) {
 			result = result + "*";
 		}
 		return result;
 	}
-	
 }
