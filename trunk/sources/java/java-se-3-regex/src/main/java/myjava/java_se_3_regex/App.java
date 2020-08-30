@@ -13,18 +13,13 @@ public class App
     	String textHelper = "";
         try{
         	textHelper = scan.nextLine();
-        }catch(IllegalStateException e) {
-        	System.out.println(e);
-        }catch(NoSuchElementException e) {
+        }catch(IllegalStateException | NoSuchElementException e) {
         	System.out.println(e);
         }
-        App app = new App();
-        app.setText(textHelper);
-        ByRegEx stream1 = new ByRegEx();
-        stream1.start();
-        ByParsing stream2 = new ByParsing();
-        stream2.start();
-        
+        ByRegEx byRegEx = new ByRegEx();
+        byRegEx.setText(textHelper);
+        textHelper = byRegEx.findSite();
+        System.out.println("Output in App: " + textHelper);
         try {
         	scan.close();
         }catch(IllegalStateException e) {
